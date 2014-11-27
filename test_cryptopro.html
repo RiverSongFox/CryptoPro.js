@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+
+<html>
+<body>
+
+    <object id="cadesplugin" type="application/x-cades"></object>
+    <object id="certEnrollClassFactory" classid="clsid:884e2049-217d-11da-b2a4-000e7bbb2b09"></object>
+    
+    <input type="button" value="Reload" onClick="location.reload()"/>
+    <input type="button" value="Initialize" onClick="Test.Initialize()"/>
+    <input type="button" value="ListCertificates" onClick="Test.ListCertificates()"/>
+    
+    <ol id="console"/>
+    
+    <script src="lib_cryptopro.js"></script>
+    <script src="lib_nativebridge.js"></script>
+    <script src="test_cryptopro.js"></script>
+    
+</body>
+</html>
