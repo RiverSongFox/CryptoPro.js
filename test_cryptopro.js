@@ -12,6 +12,10 @@ function CryptoPro_Test() {
         item.appendChild(text);
         list.appendChild(item);
     }
+
+    function listCertificates() {
+        
+    }
     
     return {
         
@@ -23,18 +27,19 @@ function CryptoPro_Test() {
                 write("Initialization FAILED: " + e.message);
             }
         },
-        
-        ListCertificates: function () {
-            var list = [],
-                i = 0;
-            try {
-                list = cryptoPro.ListCertificates();
-                for (i = 0; i < list.length; i += 1) {
-                    write("Certificate " + list[i].CN + " (" + list[i].Thumbprint + ")");
-                }
-            } catch (e) {
-                write("List Certificates FAILED: " + e.message);
-            }
+
+        Sign: function () {
+            var signature = null;
+            
+            signature = cryptoPro.Sign({
+                data: document.getElementById("text").innerHTML,
+                thumbprint: document.getElementById("thumbprint").value,
+                detached: true,
+                cades_type: 0x01,
+                documentName: "CryptoPro.js Sample",
+                signingTime: new Date()
+            });
+            
         }
         
     };

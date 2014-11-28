@@ -4,9 +4,14 @@
 function CryptoPro() {
     "use strict";
     
-    var i18n = null,             // Internationalization
-        about = null,            // CADESCOM.About → CRYPTO-PRO Information
-        certificateStore = null; // CAPICOM.Store  → Certificate Store
+    var CAPICOM_CERTIFICATE_FIND_SHA1_HASH = 0x00,
+        CADESCOM_AUTHENTICATED_ATTRIBUTE_DOCUMENT_NAME = 0x01,
+        CAPICOM_AUTHENTICATED_ATTRIBUTE_SIGNING_TIME = 0x00,
+        CADESCOM_BASE64_TO_BINARY = 0x01,
+    
+        i18n = null,              // Internationalization
+        about = null,             // CAdESCOM.About → CRYPTO-PRO Information
+        certificateStore = null;  // CAPICOM.Store  → Certificate Store
     
     i18n = (function (language) {
         switch (language) {
@@ -17,13 +22,15 @@ function CryptoPro() {
                 Init_PluginNotFound: "CRYPTO-PRO Browser Extension was not installed or has been disabled",
                 Init_PluginVersion: "Installed version of CRYPTO-PRO Browser Extension is too old",
                 Init_NotPerformed: "Initialization has not been performed, see CryptoPro.Initialize()",
-                Store_Generic: "Certificate Store Error: ",
-                Store_NotFound: "No valid certificates found"
+                Store_CertificateNotFound: "No certificate found with this thumbprint",
+                Store_OperationError: "An error occured while accessing Certificate Store: ",
+                Sign_NoEnoughParameters: "No enough paramters passed to CryptoPro.Sign() function",
+                Sign_OperationError: "An error occured during signing: "
             };
         }
     }("en"));
 
-    function CreateObject(name) {
+    function createObject(name) {
         var pluginObject = null,
             objCertEnrollClassFactory = null;
         if (navigator.userAgent.match(/ipod/i) || navigator.userAgent.match(/ipad/i) || navigator.userAgent.match(/iphone/i)) {
@@ -47,61 +54,107 @@ function CryptoPro() {
         }
     }
     
-    return {
-        
-        CertificateListItem: function (thumbprint, subject) {
-            var certificateInfo = {},
-                fields = null,
-                pair = null,
-                i = 0;
-                
-            fields = subject.split(", ");
-            for (i = 0; i < fields.length; i += 1) {
-                pair = fields[i].split("=");
-                certificateInfo[pair[0]] = pair[1];
+    function getCertificateByThumbprint(thumbprint) {
+        var certificates = null;
+        try {
+            certificateStore.Open();
+            certificates = certificateStore.Certificates.Find(CAPICOM_CERTIFICATE_FIND_SHA1_HASH, thumbprint);
+            if (certificates.Count === 0) {
+                throw new Error(i18n.Store_CertificateNotFound);
+            } else {
+                return certificates.Item(1);
             }
+        } catch (e) {
+            throw new Error(i18n.Store_OperationError + e.message);
+        } finally {
+            certificateStore.Close();
+        }
+    }
+    
+    return {
 
-            certificateInfo.Thumbprint = thumbprint;
-            return certificateInfo;
+        CadesType: {
+            CADESCOM_CADES_BES: 0x01,           // Signature Type: CAdES BES
+            CADESCOM_CADES_DEFAULT: 0x00,       // Signature Type: Default (CAdES-X Long Type 1)
+            CADESCOM_CADES_X_LONG_TYPE_1: 0x5D  // Signature Type: CAdES-X Long Type 1
         },
         
         Initialize: function () {
             try {
-                var about = new CreateObject("CADESCOM.About");
+                var about = createObject("CAdESCOM.About");
                 if (about.Version < "1.15.1500") {
                     throw new Error(i18n.Init_PluginVersion);
                 }
-                certificateStore = new CreateObject("CAPICOM.STORE");
+                certificateStore = createObject("CAPICOM.STORE");
             } catch (e) {
                 throw new Error(i18n.Init_PluginNotFound);
             }
         },
         
-        ListCertificates: function () {
-            var i = 0,
-                certificate = null,
-                list = [];
-            if (certificateStore !== null) {
-                try {
-                    certificateStore.Open();
-                    for (i = certificateStore.Certificates.Count; i > 0; i -= 1) {
-                        certificate = certificateStore.Certificates.Item(i);
-                        if (certificate.IsValid()) {
-                            list.push(new this.CertificateListItem(certificate.Thumbprint, certificate.SubjectName));
-                        }
-                    }
-                    certificateStore.Close();
-                    if (list.length > 0) {
-                        return list;
-                    } else {
-                        throw new Error(i18n.Store_NotFound);
-                    }
-                } catch (e) {
-                    throw new Error(i18n.Store_Generic + e.message);
+        Sign: function (parameters) {
+            var task = {
+                    data: null,
+                    thumbprint: null,
+                    cades_type: this.CadesType.CADESCOM_CADES_DEFAULT,
+                    detached: true,
+                    documentName: null,
+                    signingTime: null
+                },
+                
+                parameter = null,
+                
+                signer = null,      // CAdESCOM.CPSigner
+                signedData = null,  // CAdESCOM.CadesSignedData
+                attribute = null;   // CAdESCOM.CPAttribute
+            
+            for (parameter in parameters) {
+                if (parameters.hasOwnProperty(parameter) && task.hasOwnProperty(parameter)) {
+                    task[parameter] = parameters[parameter];
                 }
-            } else {
-                throw new Error(i18n.Init_NotPerformed);
             }
+            
+            if (task.data === null || task.thumbprint === null) {
+                throw new Error(i18n.Sign_NoEnoughParameters);
+            } else {
+                try {
+                    
+                    signer = createObject("CAdESCOM.CPSigner");
+                    signedData = createObject("CAdESCOM.CadesSignedData");
+                    
+                    signer.Certificate = getCertificateByThumbprint(task.thumbprint);
+                    
+                    if (task.documentName !== null) {
+                        attribute = createObject("CAdESCOM.CPAttribute");
+                        attribute.Name = CADESCOM_AUTHENTICATED_ATTRIBUTE_DOCUMENT_NAME;
+                        attribute.Value = task.documentName;
+                        signer.AuthenticatedAttributes2.Add(attribute);
+                    }
+                    
+                    if (task.signingTime !== null) {
+                        attribute = createObject("CAdESCOM.CPAttribute");
+                        attribute.Name = CAPICOM_AUTHENTICATED_ATTRIBUTE_SIGNING_TIME;
+                        attribute.Value = task.signingTime.getVarDate();
+                        signer.AuthenticatedAttributes2.Add(attribute);
+                    }
+                    
+                    signedData.ContentEncoding = CADESCOM_BASE64_TO_BINARY;
+                    signedData.Content = task.data;
+                    
+                    return signedData.SignCades(signer, task.cades_type, task.detached);
+                    
+                } catch (e) {
+                    throw new Error(i18n.Sign_OperationError + e.message);
+                } finally {
+                    certificateStore.Close();
+                }
+            }
+            
+        },
+        
+        Verify: function (parameters) {
+        },
+        
+        Hash: function (parameters) {
         }
         
     };
