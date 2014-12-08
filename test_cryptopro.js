@@ -29,17 +29,19 @@ function CryptoPro_Test() {
         },
 
         Sign: function () {
-            var signature = null;
-            
-            signature = cryptoPro.Sign({
-                data: document.getElementById("text").innerHTML,
-                thumbprint: document.getElementById("thumbprint").value,
-                detached: true,
-                cades_type: 0x01,
-                documentName: "CryptoPro.js Sample",
-                signingTime: new Date()
-            });
-            
+            try {
+				document.getElementById("signature").innerHTML = cryptoPro.Sign({
+					data: document.getElementById("text").innerHTML,
+					thumbprint: document.getElementById("thumbprint").value,
+					detached: true,
+					cades_type: 0x01,
+					documentName: "CryptoPro.js Sample",
+					signingTime: new Date()
+				});
+				write("Sign OK");
+            } catch (e) {
+                write("Sign FAILED: " + e.message);
+            }
         }
         
     };

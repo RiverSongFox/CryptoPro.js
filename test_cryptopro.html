@@ -1,17 +1,42 @@
 <!DOCTYPE HTML>
 
 <html>
+<head>
+	<link href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css" rel="stylesheet"/>
+	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
 <body>
 
     <object id="cadesplugin" type="application/x-cades"></object>
     <object id="certEnrollClassFactory" classid="clsid:884e2049-217d-11da-b2a4-000e7bbb2b09"></object>
     
-    <input type="button" value="Reload" onClick="location.reload()"/>
-    <input type="button" value="Initialize" onClick="Test.Initialize()"/>
-    <input type="button" value="Sign" onClick="Test.Sign()"/>
-    
-    <input type="text" id="thumbprint" size="50" value="45ef04ae95736641e81ba0bf2dab2b70aa8e039d"/>
-    <textarea id="text"></textarea>
+	<div class="pure-form pure-form-aligned">
+		<div class="pure-control-group">
+			<label for="thumbprint">Thumbprint:</label>
+			<input type="text" id="thumbprint" size="50" value="45ef04ae95736641e81ba0bf2dab2b70aa8e039d"/>
+		</div>
+		<div class="pure-control-group">
+			<label for="text">Text:</label>
+			<textarea id="text"></textarea>
+		</div>
+		<div class="pure-control-group">
+			<label for="signature">Signature:</label>
+			<textarea id="signature"></textarea>
+		</div>
+		<div class="pure-controls">
+			<button class="pure-button" onclick="location.reload()">
+				<i class="fa fa-refresh"></i>
+				Reload
+			</button>
+			<button class="pure-button" onclick="Test.Initialize()">
+				<i class="fa fa-gear"></i>
+				Initialize
+			</button>
+			<button class="pure-button" onclick="Test.Sign()">
+				<i class="fa fa-edit"></i>
+				Sign
+			</button>
+		</div>
+	</div>
     
     <ol id="console"/>
     
