@@ -12,10 +12,6 @@ function CryptoPro_Test() {
         item.appendChild(text);
         list.appendChild(item);
     }
-
-    function listCertificates() {
-        
-    }
     
     return {
         
@@ -29,18 +25,34 @@ function CryptoPro_Test() {
         },
 
         Sign: function () {
+            var
+                task = {
+                    data: document.getElementById("text").innerHTML,
+                    thumbprint: document.getElementById("thumbprint").value,
+                    cades_type: document.getElementById("type").value === "CADESCOM_CADES_X_LONG_TYPE_1" ? cryptoPro.CadesType.CADESCOM_CADES_X_LONG_TYPE_1 : cryptoPro.CadesType.CADESCOM_CADES_BES,
+                    detached: document.getElementById("detached").checked,
+                    documentName: document.getElementById("signedAttribute_Name").value === "" ? null : document.getElementById("signedAttribute_Name").value,
+                    signingTime: new Date(),
+                    tsp: document.getElementById("tsp").value === "" ? null : document.getElementById("tsp").value
+                };
             try {
-				document.getElementById("signature").innerHTML = cryptoPro.Sign({
-					data: document.getElementById("text").innerHTML,
-					thumbprint: document.getElementById("thumbprint").value,
-					detached: true,
-					cades_type: 0x01,
-					documentName: "CryptoPro.js Sample",
-					signingTime: new Date()
-				});
+				document.getElementById("signature").innerHTML = cryptoPro.Sign(task);
 				write("Sign OK");
             } catch (e) {
                 write("Sign FAILED: " + e.message);
+            }
+        },
+        
+        Verify: function () {
+        },
+        
+        UI: {
+            UpdateTSPField: function () {
+                if (document.getElementById("type").value === "CADESCOM_CADES_X_LONG_TYPE_1") {
+                    document.getElementById("tsp").removeAttribute("disabled");
+                } else {
+                    document.getElementById("tsp").setAttribute("disabled", "");
+                }
             }
         }
         

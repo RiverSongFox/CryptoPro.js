@@ -25,6 +25,7 @@ function CryptoPro() {
                 Store_CertificateNotFound: "No certificate found with this thumbprint",
                 Store_OperationError: "An error occured while accessing Certificate Store: ",
                 Sign_NoEnoughParameters: "No enough paramters passed to CryptoPro.Sign() function",
+                Sign_NoTSPAddress: "No address of TSP server was specified, oblogatory for CAdES-X Long Type 1",
                 Sign_OperationError: "An error occured during signing: "
             };
         }
@@ -96,6 +97,7 @@ function CryptoPro() {
                     data: null,
                     thumbprint: null,
                     cades_type: this.CadesType.CADESCOM_CADES_DEFAULT,
+                    tsp: null,
                     detached: true,
                     documentName: null,
                     signingTime: null
@@ -113,7 +115,9 @@ function CryptoPro() {
                 }
             }
             
-            if (task.data === null || task.thumbprint === null) {
+            if (task.cades_type === this.CadesType.CADESCOM_CADES_X_LONG_TYPE_1 && task.tsp === null) {
+                throw new Error(i18n.Sign_NoTSPAddress);
+            } else if (task.data === null || task.thumbprint === null) {
                 throw new Error(i18n.Sign_NoEnoughParameters);
             } else {
                 try {
@@ -122,6 +126,10 @@ function CryptoPro() {
                     signedData = createObject("CAdESCOM.CadesSignedData");
                     
                     signer.Certificate = getCertificateByThumbprint(task.thumbprint);
+                    
+                    if (task.cades_type === this.CadesType.CADESCOM_CADES_X_LONG_TYPE_1) {
+                        signer.TSAAddress = task.tsp;
+                    }
                     
                     if (task.documentName !== null) {
                         attribute = createObject("CAdESCOM.CPAttribute");

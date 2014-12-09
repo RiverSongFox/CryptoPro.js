@@ -9,36 +9,83 @@
     <object id="cadesplugin" type="application/x-cades"></object>
     <object id="certEnrollClassFactory" classid="clsid:884e2049-217d-11da-b2a4-000e7bbb2b09"></object>
     
-	<div class="pure-form pure-form-aligned">
-		<div class="pure-control-group">
-			<label for="thumbprint">Thumbprint:</label>
-			<input type="text" id="thumbprint" size="50" value="45ef04ae95736641e81ba0bf2dab2b70aa8e039d"/>
-		</div>
-		<div class="pure-control-group">
-			<label for="text">Text:</label>
-			<textarea id="text"></textarea>
-		</div>
-		<div class="pure-control-group">
-			<label for="signature">Signature:</label>
-			<textarea id="signature"></textarea>
-		</div>
-		<div class="pure-controls">
-			<button class="pure-button" onclick="location.reload()">
-				<i class="fa fa-refresh"></i>
-				Reload
-			</button>
-			<button class="pure-button" onclick="Test.Initialize()">
-				<i class="fa fa-gear"></i>
-				Initialize
-			</button>
-			<button class="pure-button" onclick="Test.Sign()">
-				<i class="fa fa-edit"></i>
-				Sign
-			</button>
-		</div>
-	</div>
+    <div class="pure-form pure-form-aligned">
+
+        <fieldset>
+            <legend>Certificate</legend>
+            <div class="pure-control-group">
+                <label for="thumbprint">Thumbprint:</label>
+                <input type="text" id="thumbprint" value="45ef04ae95736641e81ba0bf2dab2b70aa8e039d" required/>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Signed Attributes</legend>
+            <div class="pure-control-group">
+                <label for="signedAttribute_Name">Document Name</label>
+                <input id="signedAttribute_Name" type="text"/>
+            </div>
+            <div class="pure-control-group">
+                <label for="signedAttribute_Date">Date and Time</label>
+                <input id="signedAttribute_Date" type="text"/>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Data</legend>
+            <div class="pure-control-group">
+                <label for="text">Text</label>
+                <textarea id="text" required></textarea>
+            </div>
+            <div class="pure-control-group">
+                <label for="signature">Signature</label>
+                <textarea id="signature"></textarea>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Settings</legend>
+            <div class="pure-control-group">
+                <label for="type">Type</label>
+                <select id="type" onchange="Test.UI.UpdateTSPField()">
+                    <option value="CADESCOM_CADES_BES">Basic Electronic Signature</option>
+                    <option value="CADESCOM_CADES_X_LONG_TYPE_1">CAdES-X Long Type 1</option>
+                </select>
+            </div>
+            <div class="pure-control-group">
+                <label for="tsp">TSP Server Address</label>
+                <input id="tsp" type="text" disabled>
+            </div>
+            <div class="pure-control-group">
+                <label for="detached">Detached</label>
+                <input id="detached" type="checkbox">
+            </div>
+        </fieldset>
+
+        <div class="pure-controls">
+            <button class="pure-button" onclick="location.reload()">
+                <i class="fa fa-refresh"></i>
+                Reload
+            </button>
+            <button class="pure-button" onclick="Test.Initialize()">
+                <i class="fa fa-gear"></i>
+                Initialize
+            </button>
+            <button class="pure-button" onclick="Test.Sign()">
+                <i class="fa fa-edit"></i>
+                Sign
+            </button>
+            <button class="pure-button" onclick="Test.Verify()">
+                <i class="fa fa-check"></i>
+                Verify
+            </button>
+        </div>
+    </div>
+
+    <div class="">
+        <ol id="console"/>
+    </div>
     
-    <ol id="console"/>
     
     <script src="lib_cryptopro.js"></script>
     <script src="lib_nativebridge.js"></script>
