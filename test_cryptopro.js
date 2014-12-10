@@ -29,7 +29,7 @@ function CryptoPro_Test() {
                 task = {
                     data: document.getElementById("text").innerHTML,
                     thumbprint: document.getElementById("thumbprint").value,
-                    cades_type: document.getElementById("type").value === "CADESCOM_CADES_X_LONG_TYPE_1" ? cryptoPro.CadesType.CADESCOM_CADES_X_LONG_TYPE_1 : cryptoPro.CadesType.CADESCOM_CADES_BES,
+                    cadesType: document.getElementById("type").value === "CADESCOM_CADES_X_LONG_TYPE_1" ? cryptoPro.CadesType.CADESCOM_CADES_X_LONG_TYPE_1 : cryptoPro.CadesType.CADESCOM_CADES_BES,
                     detached: document.getElementById("detached").checked,
                     documentName: document.getElementById("signedAttribute_Name").value === "" ? null : document.getElementById("signedAttribute_Name").value,
                     signingTime: new Date(),

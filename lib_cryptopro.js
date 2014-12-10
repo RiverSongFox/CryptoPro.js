@@ -96,7 +96,7 @@ function CryptoPro() {
             var task = {
                     data: null,
                     thumbprint: null,
-                    cades_type: this.CadesType.CADESCOM_CADES_DEFAULT,
+                    cadesType: this.CadesType.CADESCOM_CADES_DEFAULT,
                     tsp: null,
                     detached: true,
                     documentName: null,
@@ -115,7 +115,7 @@ function CryptoPro() {
                 }
             }
             
-            if (task.cades_type === this.CadesType.CADESCOM_CADES_X_LONG_TYPE_1 && task.tsp === null) {
+            if (task.cadesType === this.CadesType.CADESCOM_CADES_X_LONG_TYPE_1 && task.tsp === null) {
                 throw new Error(i18n.Sign_NoTSPAddress);
             } else if (task.data === null || task.thumbprint === null) {
                 throw new Error(i18n.Sign_NoEnoughParameters);
@@ -127,7 +127,7 @@ function CryptoPro() {
                     
                     signer.Certificate = getCertificateByThumbprint(task.thumbprint);
                     
-                    if (task.cades_type === this.CadesType.CADESCOM_CADES_X_LONG_TYPE_1) {
+                    if (task.cadesType === this.CadesType.CADESCOM_CADES_X_LONG_TYPE_1) {
                         signer.TSAAddress = task.tsp;
                     }
                     
@@ -148,7 +148,7 @@ function CryptoPro() {
                     signedData.ContentEncoding = CADESCOM_BASE64_TO_BINARY;
                     signedData.Content = task.data;
                     
-                    return signedData.SignCades(signer, task.cades_type, task.detached);
+                    return signedData.SignCades(signer, task.cadesType, task.detached);
                     
                 } catch (e) {
                     throw new Error(i18n.Sign_OperationError + e.message);
