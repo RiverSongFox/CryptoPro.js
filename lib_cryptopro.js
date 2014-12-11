@@ -23,10 +23,10 @@ function CryptoPro() {
                 Init_PluginVersion: "Installed version of CRYPTO-PRO Browser Extension is too old",
                 Init_NotPerformed: "Initialization has not been performed, see CryptoPro.Initialize()",
                 Store_CertificateNotFound: "No certificate found with this thumbprint",
-                Store_OperationError: "An error occured while accessing Certificate Store: ",
-                Sign_NoEnoughParameters: "No enough paramters passed to CryptoPro.Sign() function",
-                Sign_NoTSPAddress: "No address of TSP server was specified, oblogatory for CAdES-X Long Type 1",
-                Sign_OperationError: "An error occured during signing: "
+                Store_OperationError: "An error occurred while accessing Certificate Store: ",
+                Sign_NoEnoughParameters: "No enough parameters passed to CryptoPro.Sign() function",
+                Sign_NoTSPAddress: "No address of TSP server was specified, obligatory for CAdES-X Long Type 1",
+                Sign_OperationError: "An error occurred during signing: "
             };
         }
     }("en"));
